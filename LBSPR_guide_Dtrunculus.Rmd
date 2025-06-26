@@ -1,9 +1,9 @@
 ---
 title: "Supporting Information 1"
-subtitle: "Disparate estimates of intrinsic productivity for Antarctic krill (Euphausia superba) across small spatial scales under a rapidly changing ocean."
+subtitle: "CHANGES OF POPULATION STATUS AND REPRODUCTIVE OUTPUT from both empirical and model based perspective.: CONSIDERATIONS FOR THE CONSERVATION OF NATURAL POPULATIONS OF DONAX TRUNCULUS (L. 1758)"
 #author: "Mardones, M; Jarvis Mason, E.T.;  Santa Cruz, F.; Watters, G.; Cárdenas, C.A"
 date:  "`r format(Sys.time(), '%d %B, %Y')`"
-bibliography: LBSPR.bib
+bibliography: LBSPR_Dtrunculus.bib
 csl: apa.csl
 link-citations: yes
 linkcolor: blue
@@ -91,30 +91,21 @@ thememau <- theme(axis.text.y = element_blank(),
 
 # CONTEXT
 
-This supplementary material with essential formulas, datasets, and code snippets is delivered for the application of the LBSPR model in studying krill populations within the West Antarctic Peninsula (WAP) region. The LBSPR model, pivotal for unraveling krill dynamics, is reinforced by mathematical expressions elucidating key parameters and environmental influences. Curated datasets provide valuable insights into factors shaping krill habitats. With a strong emphasis on reproducibility, this resource ensures that findings can undergo independent validation, fostering trust in scientific outcomes. Transparent documentation of methods and assumptions promotes understanding and scrutiny of the analysis process by peers.
+
 
 
 # METHODOLOGY
 
-## Monitoring Data (SISO Program)
-
-For this analysis, data from the monitoring of the krill fishery were used, which have been systematically collected on board fishing vessels by the CCAMLR SISO (Scheme of International Scientific Observation) program. Krill sizes compositions were obtained from the entire area 48.1, which was combined in each management stratum defined at 2.1 section (Figure \@ref(fig:Figure1)). For this analysis, 1,266,267 krill individuals were measured from fishery activity, the majority (~75%) from the Bransfield, Elephant and SouthWest strata. 
-
-```{r Figure1, echo=FALSE, out.width='60%', fig.cap="Sizes compositions from SISO program monitoring krill fishery by strata (BS=Brainsfield Strait, EI= Elephant Island, GS= Gerlache Strait, JOIN= Joinville Island, SSWI= South West). Red line represent recruit size"}
-knitr::include_graphics('index_files/figure-html/Strata_Nochina.png')
-```
-
-The information gaps (years without sizes composition data) are not calculated because there is no autocorrelation between years, but singular estimators over time.
-
 
 ## LBSPR Modeling
 
-### Biological and fishery parameters krill
+### Biological and fishery parameters wedge clam
 
 ```{r}
 #Create a new LB_pars Object
 #To create a new LB_pars object you use the new function:
 MyPars <- new("LB_pars")
+MyPars23 <- new("LB_pars")
 
 #You can see the elements or slots of the LB_pars object using the
 #slotNames function:
@@ -144,27 +135,56 @@ The model needs specifications related to both biological and fishery parameters
 #MyPars <- new("LB_pars")
 ## A blank LB_pars object created
 ## Default values have been set for some parameters
-MyPars@Species <- "Euphausia superba"
-MyPars@Linf <- 60 
-MyPars@L50 <- 34 
-MyPars@L95 <- 55 # verrificar bibliografia
-MyPars@MK <- 0.4/0.45
+MyPars@Species <- "Donax trunculus"
+MyPars@Linf <- 49 
+MyPars@L50 <- 10.4
+MyPars@L95 <- 25 # verrificar bibliografia
+MyPars@MK <- 0.99/0.48
 
 
 #Explotation
-MyPars@SL50 <- 40#numeric() #1
-MyPars@SL95 <- 56#numeric() #27
-MyPars@SPR <- 0.75 #numeric()# ###cambia el numero 0.4 a en blanco
+#MyPars@SL50 <- 25#numeric() #1
+#MyPars@SL95 <- 30#numeric() #27
+MyPars@SPR <- 0.40 #numeric()# ###cambia el numero 0.4 a en blanco
 MyPars@BinWidth <- 1
 #MyPars@FM <- 1
 
-MyPars@Walpha <- 1
+MyPars@Walpha <- 0.0001
 MyPars@Wbeta <- 3.0637 #r2 = 0.9651
 
 MyPars@BinWidth <-1
-MyPars@BinMax <- 70
+MyPars@BinMax <- 50
 MyPars@BinMin <- 0
 MyPars@L_units <- "mm"
+```
+
+otro Escenario 23 mm selectivity
+
+```{r}
+
+## A blank LB_pars object created
+## Default values have been set for some parameters
+MyPars23@Species <- "Donax trunculus 2"
+MyPars23@Linf <- 49 
+MyPars23@L50 <- 10.4
+MyPars23@L95 <- 25 # verrificar bibliografia
+MyPars23@MK <- 0.99/0.48
+
+
+#Explotation
+#MyPars23@SL50 <- 23#numeric() #1
+#MyPars23@SL95 <- 30#numeric() #27
+MyPars23@SPR <- 0.40 #numeric()# ###cambia el numero 0.4 a en blanco
+MyPars23@BinWidth <- 1
+#MyPars@FM <- 1
+
+MyPars23@Walpha <- 0.0001
+MyPars23@Wbeta <- 3.0637 #r2 = 0.9651
+
+MyPars23@BinWidth <-1
+MyPars23@BinMax <- 50
+MyPars23@BinMin <- 0
+MyPars23@L_units <- "mm"
 ```
 
 
@@ -172,7 +192,7 @@ MyPars@L_units <- "mm"
 tablepar <-data.frame(Value=c(MyPars@Linf,
                        MyPars@L50 ,
                        MyPars@L95 ,
-                       round(MyPars@MK,3) ,
+                       MyPars@MK ,
                        MyPars@SL50 ,
                        MyPars@SL95 ,
                        MyPars@SPR ,
@@ -257,47 +277,29 @@ Two objects are required to fit the LBSPR model to length data: life-history par
 ```{r}
 MyLengths <- new("LB_lengths")
 slotNames(MyLengths)
+
+
+MyLengths23 <- new("LB_lengths")
+slotNames(MyLengths23)
+
 ```
 
 However, it is probably easier to create the `LB_lengths` object by directly reading in a `.csv`. A length frequency data of krill set with multiple years (2001-2020) by strata in 48.1 Subarea.
 
 ```{r message=F, warning=FALSE}
-#Brainsflied Strata
-datdir <- setwd("~/DOCAS/LBSPR_Krill")
-Lenbs <- new("LB_lengths", 
+Lendt <- new("LB_lengths", 
              LB_pars=MyPars, 
-             file=paste0(datdir, "/lenghtBS_nochina.csv"), 
+             file=("data/LDF_Dtrunculus.csv"), 
              dataType="freq",
              sep=",",
              header=T)
-#Elephan Island Strata
-Lenei <- new("LB_lengths", 
-             LB_pars=MyPars, 
-             file=paste0(datdir, "/lenghtEI_nochina.csv"),
+
+Lendt23 <- new("LB_lengths", 
+             LB_pars=MyPars23, 
+             file=("data/LDF_Dtrunculus.csv"), 
              dataType="freq",
              sep=",",
              header=T)
-#Gerlache Strata
-Lengc <- new("LB_lengths", 
-             LB_pars=MyPars, 
-             file=paste0(datdir, "/lenghtExtra_nochina.csv"), 
-             dataType="freq",
-             sep=",",
-             header=T)
-#Join Strata
-Lenjo <- new("LB_lengths", 
-             LB_pars=MyPars, 
-             file=paste0(datdir, "/lenghtJOIN_nochina.csv"), 
-             dataType="freq",
-             sep=",",
-             header=T)
-#SSIW Strata
-Lenssiw <- new("LB_lengths", 
-               LB_pars=MyPars, 
-               file=paste0(datdir, "/lenghtSSIW_nochina.csv"), 
-               dataType="freq",
-               sep=",",
-               header=T)
 ```
 
 
@@ -306,53 +308,12 @@ Lenssiw <- new("LB_lengths",
 The LBSPR model is fitted by strata using the `LBSPRfit` function. 
 
 ```{r message=FALSE}
-fitbs <- LBSPRfit(MyPars, Lenbs)
-fitei <- LBSPRfit(MyPars, Lenei)
-fitgc <- LBSPRfit(MyPars, Lengc)
-fitjo <- LBSPRfit(MyPars, Lenjo)
-fitssiw <- LBSPRfit(MyPars, Lenssiw)
+fitdt <- LBSPRfit(MyPars, Lendt)
+fitdt23 <- LBSPRfit(MyPars23, Lendt23)
 ```
 
 
 
-### Sensitivity and perfomance analysis metohodology.
-
-Ten sensitivity scenarios based on the upper and lower range for the asymptotic length von Bertalanffy $L_{\infty}$ (55 to 65 mm) used in the base model (60 mm) were tested to identify the impact of this parameter on the SPR estimation, given that it is the parameters exhibiting the high degree of variability and one of the factors that most determines the estimates. On the other hand, the interdependence between krill and their environment is a well-known and influential factor in population dynamics, ecosystem impacts, and fishery. This interdependence also affects the reproductive potential and consequently, to any management decision that takes into account population parameters of krill. To assess the impact of individual growth variability, three scenarios of the VB k parameter were tested, representing different growth types (low = 0.2, medium = 0.7, and high = 1.2). Figure \@ref(fig:Figure4) displays a theoretical growth curve for krill based on three scenarios that were tested using LBSPR.
-
-
-```{r Figure4, out.width="70%", fig.cap="Theoretical growth curves for krill based on three SPR sensitivity scenarios that were tested using LBSPR."}
-# Definir los parámetros del modelo de Von Bertalanffy
-L_inf <- 60
-k <- c(0.2, 0.7, 1.2)
-t_0 <- 0
-# Crear un vector de edades
-edades <- seq(0, 8, by = 0.2)
-# Calcular los valores teóricos de crecimiento somático
-df <- data.frame(edades = rep(edades, 
-                              length(k)), 
-                 k = rep(k, each = length(edades)))
-
-df <- df %>% 
-  mutate(crecimiento = L_inf * (1 - exp(-k * (edades - t_0))))
-# Graficar la curva de crecimiento somático
-sen <- ggplot(df, aes(x = edades, 
-               y = crecimiento, 
-               color = factor(k))) +
-  geom_line(size=1.5) +
-  xlab("Ages") +
-  ylab("Length (mm)") +
-  ggtitle("") +
-  theme(panel.background = element_rect(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank())+
-  scale_color_viridis_d(option="C",
-                       name = "Theoretical growth",
-                       labels = c("Low", "Medium", "High"))+
-  theme_few()
-sen
-```
-
-After applying each scenario using each of the parameter setting, the results of scenarios are compared with the results provided by the methods based setting (Table 1), analyzing in this way the efect of underestimation/overestimation of the parameters $L_{\infty}$ and *k*.
 
 \newpage
 
@@ -362,112 +323,61 @@ After applying each scenario using each of the parameter setting, the results of
 
 The results demonstrate good fits of the size structure distribution model for krill across the strata. The model accurately captures the distribution patterns of size classes, indicating its effectiveness in characterizing the population structure. The model successfully captures the variations in size distribution, reflecting the natural variability in krill populations across different strata. These findings suggest that the model can be utilized as a valuable tool for understanding and predicting size structure dynamics in krill populations (Figure \@ref(fig:Figure5)).
 
-```{r Figure5, fig.cap="Fit of the model to the data of lengths in all strata", fig.height=18, fig.width=5}
-bscom1 <-plotSize(fitbs,
+```{r Figure5, fig.cap="Fit of the model to the data of lengths in all strata"}
+dtcom1 <-plotSize(fitdt,
                   scales = "fixed",
-         Title="Bransfield strata")+
+         Title="D. trunculus")+
   thememau
-eicom1 <-plotSize(fitei,
-         Title="Elephan Island strata")+
+dtcom1
+dtcom123 <-plotSize(fitdt23,
+                  scales = "fixed",
+         Title="D. trunculus 23")+
   thememau
-gscom1 <- plotSize(fitgc,
-         Title="Gerlache strata")+
-  thememau
-jocom1 <- plotSize(fitjo,
-         Title="Joinville strata")+
-  thememau
-sswicom1 <- plotSize(fitssiw,
-         Title="SSWI strata")+
-  thememau
-
-
-ggarrange(bscom1,
-          eicom1, 
-          gscom1,
-          jocom1, sswicom1, 
-          ncol = 1,
-          legend="bottom",
-          common.legend = TRUE)
+ggarrange(dtcom1,
+          dtcom123,
+          ncol=2)
 ```
 
 
 The difference between the observed accumulated size compositions for each stratum and compare it with the expected size composition at a target SPR (75% SPR). In the simulation of the structure in its virgin condition (without fishing), the red bars represent each stratum. Additionally, the overlap with the average structures observed during the years of fishery monitoring can be visualized. The SSWI Gerlache and EI strata exhibit the greatest differences from the simulated structure, possibly due to the significant contribution of juveniles in these strata. Conversely, the BS and JO strata demonstrate the closest resemblance to the simulated structure (Figure \@ref(fig:Figure6)).
 
-```{r Figure6, fig.cap="Difference between the observed accumulated size structure for each stratum related SPR objective", out.width="80%"}
+```{r Figure6, fig.cap="Difference between the observed accumulated size structure for each stratum related SPR objective", fig.height=4, fig.width=8}
 yr <- 5 # first year of data
 
-bscom <- plotTarg(MyPars, Lenbs, yr=yr,
+dtcom <- plotTarg(MyPars, Lendt, yr=yr,
                   Cols = c(2,4),
                   size.axtex = 8,
-                  title="BS",
-                  targtext = FALSE)+
-  thememau 
-eicom <- plotTarg(MyPars, Lenei, yr=yr,
-                  Cols = c(2,4),
-                  size.axtex = 8,
-                  title="EI",
-                  targtext = FALSE)+
-  thememau 
-gccom <- plotTarg(MyPars, Lengc, yr=yr,
-                  Cols = c(2,4),
-                  size.axtex = 8,
-                  title="GS",
-                  targtext = FALSE)+
-  thememau 
-jocom <- plotTarg(MyPars, Lenjo, yr=1,
-                  Cols = c(2,4),
-                  size.axtex = 8,
-                  title="JOIN",
-                  targtext = FALSE)+
-  thememau 
-sscom <- plotTarg(MyPars, Lenssiw , yr=yr,
-                  Cols = c(2,4),
-                  size.axtex = 8,
-                  title="SSWI",
+                  title="49 Linf",
                   targtext = FALSE)+
   thememau 
 
-ggarrange(bscom, eicom + rremove("ylab"), 
-          gccom + rremove("ylab"),
-          jocom, sscom + rremove("ylab"), 
-          ncol = 3, nrow = 2,
-          legend="bottom",
-          common.legend = TRUE)
+dtcom23 <- plotTarg(MyPars23, Lendt23, yr=yr,
+                  Cols = c(2,4),
+                  size.axtex = 8,
+                  title="48 Linf",
+                  targtext = FALSE)+
+  thememau 
+ggarrange(dtcom,
+          dtcom23,
+          ncol = 2, common.legend = T)
 ```
 
 Furthermore, ogive maturity curve specific to each stratum and year, as well as the estimated length selectivity curve, are presented in (Figure \@ref(fig:Figure7)). These curves offer crucial insights into the fishery's impact on the population and its reproductive status, providing measures of the population's vulnerability to fishing mortality. Notably, the Brainsfield stratum stands out with a lower proportion of mature individuals, suggesting a higher prevalence of juveniles. It is important to note that the same maturity parameters were applied across all strata.
 
 ```{r Figure7, fig.cap= "Maturity curves by strata", out.width="80%"}
 
-bsmat <- plotMat(fitbs,
+dtmat <- plotMat(fitdt,
         useSmooth = TRUE,
-        Title="BS")+
+        Title="49 Linf")+
   thememau 
-eimat <-  plotMat(fitei,
+dtmat23 <- plotMat(fitdt23,
         useSmooth = TRUE,
-        Title="EI")+
+        Title="48 Linf")+
   thememau 
-gcmat <-  plotMat(fitgc,
-        useSmooth = TRUE,
-        Title="GS")+
-  thememau 
-jomat <-  plotMat(fitjo,
-        useSmooth = TRUE,
-        Title="JOIN")+
-  thememau 
-ssmat <-  plotMat(fitssiw,
-        useSmooth = TRUE,
-        Title="SSWI")+
-  thememau 
-
-ggarrange(bsmat,
-          eimat + rremove("ylab"), 
-          gcmat , 
-          jomat + rremove("ylab"), 
-          ssmat, 
-          ncol = 2, nrow = 3,
-          legend="right",
-          common.legend = TRUE)
+ggarrange(dtmat,
+          dtmat23,
+          ncol=1, common.legend = T,
+          legend = "bottom")
 ```
 
 ## Comparing producivity between years and Stratas
@@ -475,86 +385,81 @@ ggarrange(bsmat,
 The analysis of the krill population's reproductive potential across different years and strata reveals significant differences. Brainsfield and Gerlache strata exhibit a low reproductive potential below the proposed management target of 75% in the last year, with values of 0.121 and 0.085, respectively, falling even below the limit reference point. This condition arises from the concentration of a substantial number of immature individuals (juveniles) in these strata, which are being exploited by the fishery, thereby hindering their reproductive cycles from completing. On the contrary, the Elephant Island stratum demonstrates higher spawning potential ratio (SPR) levels in recent years, reaching 0.421 in 2019, which aligns closer to the management objective. This discrepancy is attributed to the spatial distribution of krill, as the Elephant Island stratum possesses a larger proportion of adult individuals compared to other strata.
 
 ```{r}
-sprbs <- as.data.frame(cbind(fitbs@Years, 
-                             fitbs@SPR,
-                             fitbs@Vars[,4])) 
-colnames(sprbs) <- c("Year","SPR", "Var")
-sprbs$SPRv <- rep("BS", nrow(sprbs))
+sprdt <- as.data.frame(cbind(fitdt@Years, 
+                             fitdt@SPR,
+                             fitdt@Vars[,4])) 
+colnames(sprdt) <- c("Year","SPR", "Var")
+sprdt$SPRv <- rep("BS", nrow(sprdt))
 
-sprei <- as.data.frame(cbind(fitei@Years, 
-                             fitei@SPR,
-                             fitei@Vars[,4])) 
-colnames(sprei) <- c("Year","SPR", "Var")
-sprei$SPRv <- rep("EI", nrow(sprei))
 
-sprgc <- as.data.frame(cbind(fitgc@Years, 
-                             fitgc@SPR,
-                             fitgc@Vars[,4])) 
-colnames(sprgc) <- c("Year","SPR", "Var")
-sprgc$SPRv <- rep("GS", nrow(sprgc))
-
-sprjo <- as.data.frame(cbind(fitjo@Years, 
-                             fitjo@SPR,
-                             fitjo@Vars[,4])) 
-colnames(sprjo) <- c("Year","SPR", "Var")
-sprjo$SPRv <- rep("JOIN", nrow(sprjo))
-
-sprssiw <- as.data.frame(cbind(fitssiw@Years, 
-                             fitssiw@SPR,
-                             fitssiw@Vars[,4])) 
-colnames(sprssiw) <- c("Year","SPR","Var")
-sprssiw$SPRv <- rep("SSWI", nrow(sprssiw))
-
-allspr <- rbind(sprbs, sprei, sprgc, sprjo, sprssiw)
-
-allspr <- allspr %>%
+allspr <- sprdt %>%
   mutate(SD = sqrt(Var))
 
+sprdt23 <- as.data.frame(cbind(fitdt23@Years, 
+                             fitdt23@SPR,
+                             fitdt23@Vars[,4])) 
+colnames(sprdt23) <- c("Year","SPR", "Var")
+sprdt23$SPRv <- rep("BS", nrow(sprdt23))
 
-allsprwide <- round(pivot_wider(allspr,
-                          names_from = SPRv,
-                          values_from = c(SPR, Var, SD),
-                          values_fill = NA,
-                          names_sep = " ",),3)
 
+allspr23 <- sprdt23 %>%
+  mutate(SD = sqrt(Var))
 
 ```
 
 Figure \@ref(fig:Figure8) provides a visual representation of the SPR trends across years and strata, clearly indicating the references (yellow line = 75% SPR Objective and Red line = 20% Limit SPR).
 
-```{r Figure8, warning=FALSE, fig.cap="Krill Intrinsic Productivity (SPR) by strata and by year", fig.height=3, fig.width=7}
-allsprpl2 <- ggplot(allspr, aes(Year, SPR)) +
-  geom_point(alpha = 0.8) + 
+```{r Figure8, message=FALSE, fig.cap="Krill Intrinsic Productivity (SPR) by strata and by year"}
+allsprpl <- ggplot(allspr, aes(Year, SPR)) +
+  geom_point(alpha = 0.8, color = "#2b8cbe", size = 2) + 
   geom_errorbar(aes(ymin = SPR - SD, ymax = SPR + SD),  
                 width = 0.2,  
                 alpha = 0.5) +
-  geom_smooth(method = "lm",
-              alpha=0.3,
-              se=TRUE,
-              col="black",
-              level = 0.75)+
-  geom_hline(yintercept = 0.75,
-             colour = '#006d2c',
-             alpha = 0.5,
-             linewidth = 1.2,
-             linetype = 2) +
-  geom_hline(yintercept = 0.20,
+  geom_smooth(method = "loess",
+              alpha = 0.3,
+              se = TRUE,
+              color = "black",
+              level = 0.75) +
+  geom_hline(yintercept = 0.40,
              colour = '#bd0026',
-             alpha = 0.5,
-             linewidth = 1.2) +
-  facet_wrap(. ~ SPRv, ncol = 5) +
-  xlim(2001, 2021) +
-  ylim(0, 0.9) +
-  theme_few() +
+             alpha = 0.7,
+             linewidth = 1) +
+  scale_x_continuous(breaks = 2013:2023, limits = c(2013, 2023)) +
+  scale_y_continuous(limits = c(0, 0.9), labels = scales::percent_format(accuracy = 1)) +
+  labs(x = "Year", y = "SPR (Spawning Potential Ratio)") +
+  theme_few(base_size = 12) +
   theme(
-    legend.position = "none",
-    axis.text.x = element_text(angle = 90, hjust = 1),
-    panel.background = element_rect(fill = "white"),
-    panel.grid.major = element_blank(),
+    axis.text.x = element_text(angle = 90, vjust = 0.5),
+    panel.grid.major = element_line(color = "gray90"),
     panel.grid.minor = element_blank()
   )
 
-allsprpl2
+allsprpl23 <- ggplot(allspr23, aes(Year, SPR)) +
+  geom_point(alpha = 0.8, color = "#74c476", size = 2) + 
+  geom_errorbar(aes(ymin = SPR - SD, ymax = SPR + SD),  
+                width = 0.2,  
+                alpha = 0.5) +
+  geom_smooth(method = "loess",
+              alpha = 0.3,
+              se = TRUE,
+              color = "black",
+              level = 0.75) +
+  geom_hline(yintercept = 0.40,
+             colour = '#bd0026',
+             alpha = 0.7,
+             linewidth = 1) +
+  scale_x_continuous(breaks = 2013:2023, limits = c(2013, 2023)) +
+  scale_y_continuous(limits = c(0, 0.9), labels = scales::percent_format(accuracy = 1)) +
+  labs(x = "Year", y = "SPR (Spawning Potential Ratio)") +
+  theme_few(base_size = 12) +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_blank()
+  )
+
+# Mostrar ambos en una figura
+ggarrange(allsprpl, allsprpl23, ncol = 2, labels = c("A", "B"))
 
 
 ```
